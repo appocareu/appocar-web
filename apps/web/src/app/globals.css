@@ -1,0 +1,400 @@
+:root {
+  color-scheme: light;
+  --bg: #f6f6f9;
+  --surface: #ffffff;
+  --surface-glass: rgba(255, 255, 255, 0.72);
+  --surface-strong: #f0f1f5;
+  --text: #0f1117;
+  --muted: #5f6a7a;
+  --primary: #1a1f2b;
+  --accent: #0d8bff;
+  --accent-2: #00d084;
+  --border: rgba(15, 17, 23, 0.08);
+  --shadow: 0 20px 40px rgba(15, 17, 23, 0.12);
+  --radius-xl: 28px;
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+  --max-width: 1200px;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  font-family: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top, #f9fbff 0%, #eef2f8 45%, #f6f6f9 100%);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+@media (prefers-reduced-data: reduce) {
+  body {
+    background: #f6f6f9;
+  }
+
+  .glass,
+  .surface {
+    box-shadow: none;
+  }
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+main {
+  width: min(100% - 3rem, var(--max-width));
+  margin: 0 auto;
+  padding: 2.5rem 0 4rem;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 2rem;
+}
+
+@media (max-width: 960px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+}
+
+.glass {
+  background: var(--surface-glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.surface {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 16px 32px rgba(15, 17, 23, 0.08);
+}
+
+.badge {
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  background: var(--surface-strong);
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.primary {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 0.85rem 1.4rem;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.primary:hover {
+  transform: translateY(-1px);
+}
+
+.secondary {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.7rem 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.hero {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: 1.05fr 0.95fr;
+  align-items: center;
+}
+
+@media (max-width: 960px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+}
+
+.hero-card {
+  padding: 2.5rem;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.hero-title {
+  font-size: clamp(2.6rem, 5vw, 4.2rem);
+  letter-spacing: -0.04em;
+  font-weight: 700;
+}
+
+.hero-subtitle {
+  color: var(--muted);
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.grid {
+  display: grid;
+  gap: 1.4rem;
+}
+
+.grid-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 960px) {
+  .grid-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  padding: 1.4rem;
+  display: grid;
+  gap: 0.8rem;
+}
+
+.card-title {
+  font-weight: 600;
+}
+
+.kpi {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.listing-grid {
+  display: grid;
+  gap: 1.4rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.listing-card {
+  overflow: hidden;
+}
+
+.listing-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.listing-card .content {
+  padding: 1.2rem;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: #fff;
+}
+
+.filter-row {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.section-title {
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.nav {
+  padding: 1.4rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.nav a {
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.nav-link svg {
+  opacity: 0.9;
+  flex: 0 0 auto;
+}
+
+.nav a.active {
+  background: var(--surface-strong);
+  color: var(--text);
+}
+
+.message-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.message-card {
+  padding: 1rem;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: #fff;
+}
+
+.admin-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.gallery {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.gallery-main {
+  position: relative;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: zoom-in;
+}
+
+.gallery-main img {
+  width: 100%;
+  height: auto;
+  border-radius: 20px;
+  object-fit: cover;
+  max-height: 520px;
+}
+
+.gallery-count {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  background: rgba(15, 17, 23, 0.7);
+  color: #fff;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+}
+
+.gallery-thumbs {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(90px, 1fr);
+  gap: 0.6rem;
+  overflow-x: auto;
+  padding-bottom: 0.4rem;
+}
+
+.gallery-thumbs .thumb {
+  border: 2px solid transparent;
+  border-radius: 14px;
+  overflow: hidden;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.gallery-thumbs .thumb img {
+  width: 100%;
+  height: 70px;
+  object-fit: cover;
+  display: block;
+}
+
+.gallery-thumbs .thumb.active {
+  border-color: var(--accent);
+}
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 12, 18, 0.92);
+  display: grid;
+  place-items: center;
+  z-index: 50;
+}
+
+.lightbox-frame {
+  width: min(92vw, 1200px);
+  max-height: 86vh;
+}
+
+.lightbox-frame img {
+  width: 100%;
+  height: auto;
+  border-radius: 18px;
+  object-fit: contain;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 0;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 54px;
+  height: 54px;
+  border-radius: 999px;
+  border: 0;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 36px;
+  cursor: pointer;
+}
+
+.lightbox-nav.prev {
+  left: 24px;
+}
+
+.lightbox-nav.next {
+  right: 24px;
+}
+
+@media (max-width: 768px) {
+  .gallery-main img {
+    max-height: 360px;
+  }
+  .lightbox-nav {
+    width: 44px;
+    height: 44px;
+    font-size: 28px;
+  }
+}

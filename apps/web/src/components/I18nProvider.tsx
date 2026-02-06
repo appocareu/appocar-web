@@ -1,0 +1,356 @@
+"use client";
+
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+
+export type Locale = "en" | "cs" | "uk";
+
+type Dictionary = Record<string, string>;
+
+const dictionaries: Record<Locale, Dictionary> = {
+  en: {
+    "nav.overview": "Overview",
+    "nav.search": "Search",
+    "nav.sell": "Sell",
+    "nav.favorites": "Favorites",
+    "nav.messages": "Messages",
+    "nav.admin": "Admin",
+    "badge.marketplace": "Modern design · Premium marketplace",
+    "hero.title": "Find your next car with clarity and confidence.",
+    "hero.subtitle":
+      "APPOCAR blends verified listings, premium dealers, and a clean modern interface to make buying and selling effortless.",
+    "cta.search": "Start searching",
+    "cta.sell": "Sell your car",
+    "kpi.listings": "Verified listings across EU & US markets.",
+    "kpi.response": "Dealer response rate in under 2 hours.",
+    "kpi.alerts": "Daily saved searches with instant alerts.",
+    "section.featured": "Featured inventory",
+    "section.viewAll": "View all",
+    "auth.guest": "Guest",
+    "auth.loading": "Loading...",
+    "search.title": "Search inventory",
+    "search.subtitle": "Refine by price, mileage, body style, and fuel.",
+    "favorites.title": "Favorites",
+    "favorites.subtitle": "Saved listings sync across your devices.",
+    "messages.title": "Messages",
+    "messages.subtitle": "Chat with verified sellers in a secure channel.",
+    "admin.title": "Admin overview",
+    "admin.subtitle": "Moderate listings, dealers, and marketplace health.",
+    "admin.today": "Today",
+    "favorites.syncing": "Syncing favorites...",
+    "messages.loading": "Loading conversations...",
+    "messages.placeholder": "Type a message",
+    "messages.send": "Send",
+    "messages.sent": "Sent.",
+    "messages.start": "Start the conversation",
+    "sell.title": "Sell your car",
+    "sell.subtitle": "Post a listing in minutes. Verified sellers get priority placement.",
+    "lang.label": "Language",
+    "lang.en": "English",
+    "lang.cs": "Czech",
+    "lang.uk": "Ukrainian",
+    "filters.query": "Search make, model, trim",
+    "filters.minPrice": "Min price",
+    "filters.maxPrice": "Max price",
+    "filters.maxMileage": "Max mileage",
+    "filters.fuel": "Fuel",
+    "filters.transmission": "Transmission",
+    "filters.body": "Body",
+    "filters.petrol": "Petrol",
+    "filters.diesel": "Diesel",
+    "filters.hybrid": "Hybrid",
+    "filters.plugInHybrid": "Plug-in Hybrid",
+    "filters.electric": "Electric",
+    "filters.automatic": "Automatic",
+    "filters.manual": "Manual",
+    "filters.suv": "SUV",
+    "filters.sedan": "Sedan",
+    "filters.hatchback": "Hatchback",
+    "filters.coupe": "Coupe",
+    "filters.wagon": "Wagon",
+    "filters.convertible": "Convertible",
+    "listing.notFound": "Listing not found",
+    "listing.notFoundText": "The listing you requested does not exist.",
+    "listing.backToSearch": "Back to search",
+    "listing.highlights": "Vehicle highlights",
+    "listing.yearLabel": "Year",
+    "listing.mileageLabel": "Mileage",
+    "listing.fuelLabel": "Fuel",
+    "listing.transmissionLabel": "Transmission",
+    "listing.powerLabel": "Power",
+    "listing.driveLabel": "Drive",
+    "listing.description": "Description",
+    "listing.features": "Features",
+    "listing.contact": "Contact seller",
+    "listing.messageSeller": "Message seller",
+    "listing.saveFavorite": "Save to favorites",
+    "listing.responds": "Usually responds in 2 hours · Verified profile",
+    "listing.favoriteSaved": "Saved to favorites.",
+    "listing.conversationStarted": "Conversation started. Check Messages.",
+    "listing.signInToContinue": "Please sign in to continue.",
+    "listing.supabaseMissing": "Supabase env vars are missing.",
+    "favorites.remove": "Remove",
+    "sell.publish": "Publish listing",
+    "sell.describe": "Describe your vehicle",
+    "sell.titleField": "Title",
+    "sell.year": "Year",
+    "sell.mileage": "Mileage (km)",
+    "sell.price": "Price",
+    "sell.power": "Power (kW)",
+    "sell.location": "Location",
+    "sell.color": "Color",
+    "sell.drive": "Drive",
+    "sell.doors": "Doors",
+    "sell.seats": "Seats",
+    "sell.statusMissing": "Supabase env vars are missing.",
+    "sell.statusSignIn": "Please sign in to publish.",
+    "sell.statusPublished": "Listing published."
+  },
+  cs: {
+    "nav.overview": "Přehled",
+    "nav.search": "Hledat",
+    "nav.sell": "Prodat",
+    "nav.favorites": "Oblíbené",
+    "nav.messages": "Zprávy",
+    "nav.admin": "Admin",
+    "badge.marketplace": "Moderní design · Prémiové tržiště",
+    "hero.title": "Najděte své další auto jasně a s jistotou.",
+    "hero.subtitle":
+      "APPOCAR spojuje ověřené inzeráty, prémiové prodejce a čisté moderní rozhraní pro snadný nákup i prodej.",
+    "cta.search": "Začít hledat",
+    "cta.sell": "Prodat auto",
+    "kpi.listings": "Ověřené inzeráty v EU i USA.",
+    "kpi.response": "Reakce dealerů do 2 hodin.",
+    "kpi.alerts": "Denní uložená hledání s upozorněním.",
+    "section.featured": "Doporučené nabídky",
+    "section.viewAll": "Zobrazit vše",
+    "auth.guest": "Host",
+    "auth.loading": "Načítání...",
+    "search.title": "Hledat nabídky",
+    "search.subtitle": "Filtrujte podle ceny, nájezdu, karoserie a paliva.",
+    "favorites.title": "Oblíbené",
+    "favorites.subtitle": "Uložené nabídky se synchronizují napříč zařízeními.",
+    "messages.title": "Zprávy",
+    "messages.subtitle": "Chatujte s ověřenými prodejci v bezpečném kanálu.",
+    "admin.title": "Přehled administrace",
+    "admin.subtitle": "Moderujte nabídky, prodejce a stav tržiště.",
+    "admin.today": "Dnes",
+    "favorites.syncing": "Synchronizace oblíbených...",
+    "messages.loading": "Načítání konverzací...",
+    "messages.placeholder": "Napište zprávu",
+    "messages.send": "Odeslat",
+    "messages.sent": "Odesláno.",
+    "messages.start": "Začněte konverzaci",
+    "sell.title": "Prodejte své auto",
+    "sell.subtitle": "Vytvořte inzerát během minut. Ověření prodejci mají prioritu.",
+    "lang.label": "Jazyk",
+    "lang.en": "Angličtina",
+    "lang.cs": "Čeština",
+    "lang.uk": "Ukrajinština",
+    "filters.query": "Hledat značku, model, výbavu",
+    "filters.minPrice": "Min. cena",
+    "filters.maxPrice": "Max. cena",
+    "filters.maxMileage": "Max. nájezd",
+    "filters.fuel": "Palivo",
+    "filters.transmission": "Převodovka",
+    "filters.body": "Karoserie",
+    "filters.petrol": "Benzín",
+    "filters.diesel": "Nafta",
+    "filters.hybrid": "Hybrid",
+    "filters.plugInHybrid": "Plug-in hybrid",
+    "filters.electric": "Elektro",
+    "filters.automatic": "Automat",
+    "filters.manual": "Manuál",
+    "filters.suv": "SUV",
+    "filters.sedan": "Sedan",
+    "filters.hatchback": "Hatchback",
+    "filters.coupe": "Kupé",
+    "filters.wagon": "Kombi",
+    "filters.convertible": "Kabriolet",
+    "listing.notFound": "Inzerát nenalezen",
+    "listing.notFoundText": "Požadovaný inzerát neexistuje.",
+    "listing.backToSearch": "Zpět na hledání",
+    "listing.highlights": "Hlavní parametry",
+    "listing.yearLabel": "Rok",
+    "listing.mileageLabel": "Nájezd",
+    "listing.fuelLabel": "Palivo",
+    "listing.transmissionLabel": "Převodovka",
+    "listing.powerLabel": "Výkon",
+    "listing.driveLabel": "Pohon",
+    "listing.description": "Popis",
+    "listing.features": "Výbava",
+    "listing.contact": "Kontaktovat prodejce",
+    "listing.messageSeller": "Napsat prodejci",
+    "listing.saveFavorite": "Uložit do oblíbených",
+    "listing.responds": "Obvykle odpovídá do 2 hodin · Ověřený profil",
+    "listing.favoriteSaved": "Uloženo do oblíbených.",
+    "listing.conversationStarted": "Konverzace zahájena. Podívejte se do Zpráv.",
+    "listing.signInToContinue": "Pro pokračování se přihlaste.",
+    "listing.supabaseMissing": "Chybí Supabase proměnné.",
+    "favorites.remove": "Odebrat",
+    "sell.publish": "Zveřejnit inzerát",
+    "sell.describe": "Popište své vozidlo",
+    "sell.titleField": "Název",
+    "sell.year": "Rok",
+    "sell.mileage": "Nájezd (km)",
+    "sell.price": "Cena",
+    "sell.power": "Výkon (kW)",
+    "sell.location": "Lokalita",
+    "sell.color": "Barva",
+    "sell.drive": "Pohon",
+    "sell.doors": "Dveře",
+    "sell.seats": "Sedadla",
+    "sell.statusMissing": "Chybí Supabase proměnné.",
+    "sell.statusSignIn": "Pro zveřejnění se přihlaste.",
+    "sell.statusPublished": "Inzerát zveřejněn."
+  },
+  uk: {
+    "nav.overview": "Огляд",
+    "nav.search": "Пошук",
+    "nav.sell": "Продати",
+    "nav.favorites": "Обране",
+    "nav.messages": "Повідомлення",
+    "nav.admin": "Адмін",
+    "badge.marketplace": "Сучасний дизайн · Преміум-маркетплейс",
+    "hero.title": "Знайдіть наступне авто легко та впевнено.",
+    "hero.subtitle":
+      "APPOCAR поєднує перевірені оголошення, преміум‑дилерів і чистий сучасний стиль для зручної покупки та продажу.",
+    "cta.search": "Почати пошук",
+    "cta.sell": "Продати авто",
+    "kpi.listings": "Перевірені оголошення в ЄС та США.",
+    "kpi.response": "Відповідь дилерів до 2 годин.",
+    "kpi.alerts": "Щоденні збережені пошуки з оповіщеннями.",
+    "section.featured": "Рекомендовані авто",
+    "section.viewAll": "Дивитись все",
+    "auth.guest": "Гість",
+    "auth.loading": "Завантаження...",
+    "search.title": "Пошук авто",
+    "search.subtitle": "Фільтруйте за ціною, пробігом, кузовом і паливом.",
+    "favorites.title": "Обране",
+    "favorites.subtitle": "Збережені оголошення синхронізуються між пристроями.",
+    "messages.title": "Повідомлення",
+    "messages.subtitle": "Спілкуйтеся з перевіреними продавцями у захищеному каналі.",
+    "admin.title": "Огляд адміністратора",
+    "admin.subtitle": "Модерація оголошень, дилерів та стану маркетплейсу.",
+    "admin.today": "Сьогодні",
+    "favorites.syncing": "Синхронізація обраного...",
+    "messages.loading": "Завантаження розмов...",
+    "messages.placeholder": "Введіть повідомлення",
+    "messages.send": "Надіслати",
+    "messages.sent": "Надіслано.",
+    "messages.start": "Почніть розмову",
+    "sell.title": "Продайте своє авто",
+    "sell.subtitle": "Створіть оголошення за кілька хвилин. Перевірені продавці мають пріоритет.",
+    "lang.label": "Мова",
+    "lang.en": "Англійська",
+    "lang.cs": "Чеська",
+    "lang.uk": "Українська",
+    "filters.query": "Пошук марки, моделі, комплектації",
+    "filters.minPrice": "Мін. ціна",
+    "filters.maxPrice": "Макс. ціна",
+    "filters.maxMileage": "Макс. пробіг",
+    "filters.fuel": "Паливо",
+    "filters.transmission": "Трансмісія",
+    "filters.body": "Кузов",
+    "filters.petrol": "Бензин",
+    "filters.diesel": "Дизель",
+    "filters.hybrid": "Гібрид",
+    "filters.plugInHybrid": "Plug-in гібрид",
+    "filters.electric": "Електро",
+    "filters.automatic": "Автомат",
+    "filters.manual": "Механіка",
+    "filters.suv": "SUV",
+    "filters.sedan": "Седан",
+    "filters.hatchback": "Хетчбек",
+    "filters.coupe": "Купе",
+    "filters.wagon": "Універсал",
+    "filters.convertible": "Кабріолет",
+    "listing.notFound": "Оголошення не знайдено",
+    "listing.notFoundText": "Запитане оголошення не існує.",
+    "listing.backToSearch": "Назад до пошуку",
+    "listing.highlights": "Ключові параметри",
+    "listing.yearLabel": "Рік",
+    "listing.mileageLabel": "Пробіг",
+    "listing.fuelLabel": "Паливо",
+    "listing.transmissionLabel": "Трансмісія",
+    "listing.powerLabel": "Потужність",
+    "listing.driveLabel": "Привід",
+    "listing.description": "Опис",
+    "listing.features": "Опції",
+    "listing.contact": "Звʼязатися з продавцем",
+    "listing.messageSeller": "Написати продавцю",
+    "listing.saveFavorite": "Зберегти в обране",
+    "listing.responds": "Зазвичай відповідає за 2 години · Перевірений профіль",
+    "listing.favoriteSaved": "Збережено в обране.",
+    "listing.conversationStarted": "Розмову розпочато. Перейдіть у Повідомлення.",
+    "listing.signInToContinue": "Будь ласка, увійдіть, щоб продовжити.",
+    "listing.supabaseMissing": "Не вказані змінні Supabase.",
+    "favorites.remove": "Видалити",
+    "sell.publish": "Опублікувати оголошення",
+    "sell.describe": "Опишіть ваш автомобіль",
+    "sell.titleField": "Назва",
+    "sell.year": "Рік",
+    "sell.mileage": "Пробіг (км)",
+    "sell.price": "Ціна",
+    "sell.power": "Потужність (кВт)",
+    "sell.location": "Локація",
+    "sell.color": "Колір",
+    "sell.drive": "Привід",
+    "sell.doors": "Двері",
+    "sell.seats": "Сидіння",
+    "sell.statusMissing": "Не вказані змінні Supabase.",
+    "sell.statusSignIn": "Увійдіть, щоб опублікувати.",
+    "sell.statusPublished": "Оголошення опубліковано."
+  }
+};
+
+type I18nContextValue = {
+  locale: Locale;
+  setLocale: (locale: Locale) => void;
+  t: (key: string) => string;
+};
+
+const I18nContext = createContext<I18nContextValue | null>(null);
+
+export function I18nProvider({ children }: { children: React.ReactNode }) {
+  const [locale, setLocaleState] = useState<Locale>("en");
+
+  useEffect(() => {
+    const stored = window.localStorage.getItem("appocar_locale") as Locale | null;
+    if (stored && dictionaries[stored]) {
+      setLocaleState(stored);
+      document.documentElement.lang = stored;
+      return;
+    }
+    const device = getDeviceLocale();
+    const next = dictionaries[device] ? device : "cs";
+    setLocaleState(next);
+    document.documentElement.lang = next;
+  }, []);
+
+  const setLocale = (next: Locale) => {
+    setLocaleState(next);
+    window.localStorage.setItem("appocar_locale", next);
+    document.documentElement.lang = next;
+  };
+
+  const value = useMemo<I18nContextValue>(() => ({
+    locale,
+    setLocale,
+    t: (key: string) => dictionaries[locale][key] ?? dictionaries.en[key] ?? key
+  }), [locale]);
+
+  return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
+}
+
+function getDeviceLocale(): Locale {
+  const lang = (navigator.languages?.[0] || navigator.language || "cs").toLowerCase();
+  if (lang.startsWith("cs")) return "cs";
+  if (lang.startsWith("uk") || lang.startsWith("ua")) return "uk";
+  return "en";
+}
+
+export function useI18n() {
+  const ctx = useContext(I18nContext);
+  if (!ctx) throw new Error("useI18n must be used within I18nProvider");
+  return ctx;
+}
