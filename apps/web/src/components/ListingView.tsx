@@ -2,12 +2,19 @@
 
 import Link from "next/link";
 import type { Listing } from "@appocar/shared";
+import { useEffect } from "react";
 import { ListingActions } from "@/components/ListingActions";
 import { useI18n } from "@/components/I18nProvider";
 import { ListingGallery } from "@/components/ListingGallery";
+import { ListingCard } from "@/components/ListingCard";
+import { api } from "@/lib/api";
 
-export function ListingView({ listing }: { listing: Listing }) {
+export function ListingView({ listing, similar = [] }: { listing: Listing; similar?: Listing[] }) {
   const { t } = useI18n();
+
+  useEffect(() => {
+    api(`/api/listings/${listing.id}/view`, { method: "POST" }).catch(() => undefined);
+  }, [listing.id]);
 
   return (
     <section className="grid" style={{ gap: "1.6rem" }}>
@@ -26,10 +33,10 @@ export function ListingView({ listing }: { listing: Listing }) {
         </div>
       </div>
 
-      <div className="grid" style={{ gridTemplateColumns: "1.2fr 0.8fr", gap: "1.5rem" }}>
-        <div className="surface" style={{ padding: "1.5rem", display: "grid", gap: "1rem" }}>
+      <div className="listing-layout">
+        <div className="surface listing-panel">
           <h3 className="section-title" style={{ fontSize: "1.4rem" }}>{t("listing.highlights")}</h3>
-          <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))" }}>
+          <div className="listing-specs">
             <div><strong>{listing.year}</strong><div className="muted">{t("listing.yearLabel")}</div></div>
             <div><strong>{listing.mileageKm.toLocaleString()} km</strong><div className="muted">{t("listing.mileageLabel")}</div></div>
             <div><strong>{listing.fuel}</strong><div className="muted">{t("listing.fuelLabel")}</div></div>
@@ -50,8 +57,33 @@ export function ListingView({ listing }: { listing: Listing }) {
             </div>
           </div>
         </div>
-        <ListingActions listingId={listing.id} sellerName={listing.sellerName} />
+        <div className="listing-actions">
+          <ListingActions
+            listingId={listing.id}
+            sellerName={listing.sellerName}
+            sellerEmail={listing.sellerEmail}
+            phone={listing.phone}
+            whatsapp={listing.whatsapp}
+          />
+          <div className="surface" style={{ padding: "1.2rem", marginTop: "1rem", display: "grid", gap: "0.6rem" }}>
+            <div className="card-title">{t("listing.auditTitle")}</div>
+            <div className="muted">{t("listing.auditBody")}</div>
+          </div>
+        </div>
       </div>
+
+      {similar.length > 0 && (
+        <section className="grid" style={{ gap: "1rem" }}>
+          <div className="section-header">
+            <h3 className="section-title">{t("listing.similar")}</h3>
+          </div>
+          <div className="listing-grid">
+            {similar.map((item) => (
+              <ListingCard key={item.id} listing={item} />
+            ))}
+          </div>
+        </section>
+      )}
     </section>
   );
 }

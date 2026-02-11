@@ -1,14 +1,28 @@
 "use client";
 
 import { useState } from "react";
-import { supabaseClient } from "@/lib/supabaseClient";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
 import { useI18n } from "@/components/I18nProvider";
+import { api } from "@/lib/api";
 
-export function ListingActions({ listingId, sellerName }: { listingId: string; sellerName: string }) {
+export function ListingActions({
+  listingId,
+  sellerName,
+  sellerEmail,
+  phone,
+  whatsapp
+}: {
+  listingId: string;
+  sellerName: string;
+  sellerEmail?: string;
+  phone?: string;
+  whatsapp?: string;
+}) {
   const { user } = useAuth();
   const { t } = useI18n();
   const [status, setStatus] = useState<string | null>(null);
+  const router = useRouter();
 
   const requireAuth = () => {
     if (!user) {
@@ -20,52 +34,82 @@ export function ListingActions({ listingId, sellerName }: { listingId: string; s
 
   const saveFavorite = async () => {
     setStatus(null);
-    if (!supabaseClient) {
-      setStatus(t("listing.supabaseMissing"));
+    if (!requireAuth()) return;
+    try {
+      await api("/api/favorites", { method: "POST", json: { listingId } });
+    } catch (err) {
+      setStatus(err instanceof Error ? err.message : "Failed to save");
       return;
     }
-    if (!requireAuth()) return;
-    const { error } = await supabaseClient.from("favorites").insert({
-      user_id: user?.id,
-      listing_id: listingId
-    });
-    if (error) {
-      setStatus(error.message);
-      return;
+    try {
+      const stored = Number(window.localStorage.getItem("appocar_favorites_count") ?? "0");
+      const next = Number.isNaN(stored) ? 1 : stored + 1;
+      window.localStorage.setItem("appocar_favorites_count", String(next));
+    } catch {
+      // ignore
     }
     setStatus(t("listing.favoriteSaved"));
   };
 
   const startConversation = async () => {
     setStatus(null);
-    if (!supabaseClient) {
-      setStatus(t("listing.supabaseMissing"));
-      return;
-    }
     if (!requireAuth()) return;
-    const { data, error } = await supabaseClient
-      .from("conversations")
-      .insert({ listing_id: listingId, buyer_id: user?.id })
-      .select("id")
-      .single();
-    if (error) {
-      setStatus(error.message);
+    try {
+      api("/api/analytics/event", {
+        method: "POST",
+        json: { type: "contact_click", listingId, meta: { channel: "chat" } }
+      }).catch(() => undefined);
+      const convo = await api<{ id: string }>("/api/conversations", {
+        method: "POST",
+        json: { listingId, sellerEmail }
+      });
+      if (convo?.id) {
+        await api("/api/messages", {
+          method: "POST",
+          json: { conversationId: convo.id, body: `Hello ${sellerName}, I'm interested in this listing.` }
+        });
+      }
+    } catch (err) {
+      setStatus(err instanceof Error ? err.message : "Failed to start conversation");
       return;
     }
-    if (data?.id) {
-      await supabaseClient.from("messages").insert({
-        conversation_id: data.id,
-        sender_id: user?.id,
-        body: `Hello ${sellerName}, I'm interested in this listing.`
-      });
-    }
+    api("/api/history", {
+      method: "POST",
+      json: { action: "Contacted seller", meta: { listingId } }
+    }).catch(() => undefined);
     setStatus(t("listing.conversationStarted"));
+    router.push("/messages");
+  };
+
+  const trackContact = (channel: "call" | "whatsapp") => {
+    api("/api/analytics/event", {
+      method: "POST",
+      json: { type: "contact_click", listingId, meta: { channel } }
+    }).catch(() => undefined);
   };
 
   return (
     <div className="surface" style={{ padding: "1.5rem", display: "grid", gap: "1rem", height: "fit-content" }}>
       <h3 className="section-title" style={{ fontSize: "1.3rem" }}>{t("listing.contact")}</h3>
       <div className="muted">{sellerName}</div>
+      <div className="listing-seller">
+        {phone && (
+          <a className="secondary" href={`tel:${phone}`} onClick={() => trackContact("call")}>
+            {t("listing.callSeller")}
+          </a>
+        )}
+        {whatsapp && (
+          <a
+            className="secondary"
+            href={`https://wa.me/${whatsapp.replace(/\D+/g, "")}`}
+            target="_blank"
+            rel="noreferrer"
+            onClick={() => trackContact("whatsapp")}
+          >
+            {t("listing.whatsapp")}
+          </a>
+        )}
+      </div>
       <button className="primary" onClick={startConversation}>{t("listing.messageSeller")}</button>
       <button className="secondary" onClick={saveFavorite}>{t("listing.saveFavorite")}</button>
       {status && <div className="muted">{status}</div>}

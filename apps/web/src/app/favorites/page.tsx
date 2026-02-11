@@ -4,10 +4,10 @@ import { useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { ListingCard } from "@/components/ListingCard";
 import { mockListings } from "@appocar/shared";
-import { supabaseClient } from "@/lib/supabaseClient";
 import { useAuth } from "@/components/AuthProvider";
 import { AuthPanel } from "@/components/AuthPanel";
 import { useI18n } from "@/components/I18nProvider";
+import { api } from "@/lib/api";
 
 export default function FavoritesPage() {
   const { user, ready } = useAuth();
@@ -17,68 +17,57 @@ export default function FavoritesPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!supabaseClient || !user) return;
+    if (!user) return;
     setLoading(true);
-    const client = supabaseClient;
-    if (!client || !user) return;
-
-    const run = async () => {
-      try {
-        const { data } = await client
-          .from("favorites")
-          .select("listing_id, listings (*)")
-          .eq("user_id", user.id);
-        if (data) {
-          setFavoriteIds(data.map((row) => row.listing_id));
-          const listings = data
-            .map((row: any) => row.listings)
-            .filter(Boolean);
-          if (listings.length > 0) {
-            setFavoriteListings(
-              listings.map((record: any) => ({
-                id: record.id,
-                title: record.title,
-                price: Number(record.price),
-                currency: record.currency,
-                year: record.year,
-                mileageKm: record.mileage_km,
-                fuel: record.fuel,
-                transmission: record.transmission,
-                powerKw: record.power_kw,
-                location: record.location,
-                images: record.images,
-                sellerName: record.seller_name,
-                sellerType: record.seller_type,
-                createdAt: record.created_at,
-                body: record.body,
-                color: record.color,
-                drive: record.drive,
-                doors: record.doors,
-                seats: record.seats,
-                description: record.description,
-                features: record.features
-              }))
-            );
-          }
+    api<{ items: any[] }>("/api/favorites")
+      .then((res) => {
+        const items = Array.isArray(res.items) ? res.items : [];
+        setFavoriteIds(items.map((row) => row.listing_id ?? row.id));
+        if (items.length > 0) {
+          setFavoriteListings(
+            items.map((record: any) => ({
+              id: record.id ?? record.listing_id,
+              title: record.title,
+              price: Number(record.price),
+              currency: record.currency,
+              year: record.year,
+              mileageKm: record.mileage_km ?? record.mileageKm ?? 0,
+              fuel: record.fuel,
+              transmission: record.transmission,
+              powerKw: record.power_kw ?? record.powerKw ?? 0,
+              location: record.location,
+              images: record.images ?? [],
+              sellerName: record.seller_name ?? record.sellerName ?? "Seller",
+              sellerEmail: record.seller_email ?? record.sellerEmail ?? undefined,
+              sellerType: record.seller_type ?? record.sellerType ?? "Dealer",
+              createdAt: record.created_at ?? record.createdAt ?? new Date().toISOString(),
+              body: record.body ?? "Sedan",
+              color: record.color ?? "",
+              drive: record.drive ?? "FWD",
+              doors: record.doors ?? 4,
+              seats: record.seats ?? 5,
+              description: record.description ?? "",
+              features: record.features ?? []
+            }))
+          );
         }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    run();
+      })
+      .finally(() => setLoading(false));
   }, [user]);
 
   const favorites = useMemo(() => {
-    if (supabaseClient && user) return favoriteListings;
+    if (user) return favoriteListings;
     return mockListings.filter((listing) => favoriteIds.includes(listing.id));
   }, [favoriteIds, favoriteListings, user]);
 
   return (
     <AppShell active="/favorites">
-      <div>
-        <h2 className="section-title">{t("favorites.title")}</h2>
-        <p className="muted">{t("favorites.subtitle")}</p>
+      <div className="page-header">
+        <div>
+          <h2 className="section-title">{t("favorites.title")}</h2>
+          <p className="muted">{t("favorites.subtitle")}</p>
+        </div>
+        <div className="page-header__badge">Saved listings</div>
       </div>
       {!ready ? (
         <div className="glass" style={{ padding: "1.5rem" }}>{t("auth.loading")}</div>
@@ -88,19 +77,15 @@ export default function FavoritesPage() {
       <div className="listing-grid">
         {loading && <div className="muted">{t("favorites.syncing")}</div>}
         {favorites.map((listing) => (
-          <div key={listing.id}>
+          <div key={listing.id} className="favorite-card">
             <ListingCard listing={listing} />
             <button
               className="secondary"
               style={{ marginTop: "0.7rem" }}
               onClick={async () => {
                 setFavoriteIds((ids) => ids.filter((id) => id !== listing.id));
-                if (supabaseClient && user) {
-                  await supabaseClient
-                    .from("favorites")
-                    .delete()
-                    .eq("listing_id", listing.id)
-                    .eq("user_id", user.id);
+                if (user) {
+                  await api(`/api/favorites/${listing.id}`, { method: "DELETE" });
                 }
               }}
             >

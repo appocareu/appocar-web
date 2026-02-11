@@ -4,6 +4,7 @@ import { SellClient } from "@/components/SellClient";
 import { AuthPanel } from "@/components/AuthPanel";
 import { useAuth } from "@/components/AuthProvider";
 import { useI18n } from "@/components/I18nProvider";
+import { SellGuide } from "@/components/SellGuide";
 
 export function SellGate() {
   const { user, ready } = useAuth();
@@ -20,6 +21,7 @@ export function SellGate() {
           <h2 className="section-title">{t("sell.title")}</h2>
           <p className="muted">{t("sell.subtitle")}</p>
         </div>
+        <SellGuide />
         <AuthPanel mode="signup" />
       </div>
     );
@@ -31,6 +33,7 @@ export function SellGate() {
         <h2 className="section-title">{t("sell.title")}</h2>
         <p className="muted">{t("sell.subtitle")}</p>
       </div>
+      <SellGuide />
       <SellClient />
     </div>
   );

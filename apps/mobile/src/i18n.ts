@@ -15,7 +15,21 @@ export const dictionaries: Record<Locale, Record<string, string>> = {
     authSwitchToSignUp: "Create a new account",
     authSwitchToSignIn: "I already have an account",
     loading: "Loading...",
-    language: "Language"
+    language: "Language",
+    tabHome: "Home",
+    tabSearch: "Search",
+    tabSell: "Sell",
+    tabProfile: "Profile",
+    statListings: "Verified listings",
+    statResponse: "Dealer response",
+    statAlerts: "Saved searches",
+    viewListing: "View listing",
+    sellMobileHint: "Publish listings from the web for now.",
+    back: "Back",
+    details: "Details",
+    features: "Features",
+    contactSeller: "Contact seller",
+    logout: "Logout"
   },
   cs: {
     title: "APPOCAR",
@@ -31,7 +45,21 @@ export const dictionaries: Record<Locale, Record<string, string>> = {
     authSwitchToSignUp: "Vytvořit nový účet",
     authSwitchToSignIn: "Už mám účet",
     loading: "Načítání...",
-    language: "Jazyk"
+    language: "Jazyk",
+    tabHome: "Domů",
+    tabSearch: "Hledat",
+    tabSell: "Prodat",
+    tabProfile: "Profil",
+    statListings: "Ověřené nabídky",
+    statResponse: "Reakce dealerů",
+    statAlerts: "Uložená hledání",
+    viewListing: "Zobrazit",
+    sellMobileHint: "Zatím publikujte inzeráty přes web.",
+    back: "Zpět",
+    details: "Detaily",
+    features: "Výbava",
+    contactSeller: "Kontaktovat",
+    logout: "Odhlásit se"
   },
   uk: {
     title: "APPOCAR",
@@ -47,7 +75,21 @@ export const dictionaries: Record<Locale, Record<string, string>> = {
     authSwitchToSignUp: "Створити новий акаунт",
     authSwitchToSignIn: "У мене вже є акаунт",
     loading: "Завантаження...",
-    language: "Мова"
+    language: "Мова",
+    tabHome: "Головна",
+    tabSearch: "Пошук",
+    tabSell: "Продати",
+    tabProfile: "Профіль",
+    statListings: "Перевірені оголошення",
+    statResponse: "Відповідь дилерів",
+    statAlerts: "Збережені пошуки",
+    viewListing: "Переглянути",
+    sellMobileHint: "Поки що публікуйте з веб‑версії.",
+    back: "Назад",
+    details: "Деталі",
+    features: "Опції",
+    contactSeller: "Звʼязатися",
+    logout: "Вийти"
   }
 };
 

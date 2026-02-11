@@ -1,6 +1,6 @@
 export function Logo({ size = 28 }: { size?: number }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+    <div className="logo-lockup">
       <img
         src="/logo.svg"
         alt="APPOCAR"
@@ -8,7 +8,7 @@ export function Logo({ size = 28 }: { size?: number }) {
         height={size}
         style={{ display: "block" }}
       />
-      <span style={{ fontWeight: 700, fontSize: "1.1rem" }}>APPOCAR</span>
+      <span className="logo-wordmark">APPOCAR</span>
     </div>
   );
 }
